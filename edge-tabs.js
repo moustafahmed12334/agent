@@ -63,10 +63,16 @@
       panel.classList.remove('open');
       setActive(null);
     }
+    // Load the panel's page ahead of time so the first click opens instantly.
+    function preload() {
+      if (!iframe.getAttribute('src')) iframe.src = chrome.runtime.getURL('popup.html') + '#breaks';
+    }
+    (window.requestIdleCallback || ((f) => setTimeout(f, 200)))(preload);
+
     function openView(view) {
       const base = chrome.runtime.getURL('popup.html');
       const target = base + '#' + view;
-      if (!iframe.src) iframe.src = target;
+      if (!iframe.getAttribute('src')) iframe.src = target;
       else if (iframe.contentWindow) {
         try { iframe.contentWindow.location.hash = view; } catch (e) { iframe.src = target; }
       }
@@ -85,6 +91,7 @@
       tx.textContent = lang === 'ar' ? s.ar : s.en;
       t.appendChild(ic);
       t.appendChild(tx);
+      t.addEventListener('mouseenter', preload);
       t.addEventListener('click', (e) => {
         e.stopPropagation();
         if (activeView === s.view) closePanel();

@@ -541,7 +541,8 @@ function showView(name) {
   document.getElementById('tabHub').classList.toggle('active', name === 'hub');
 
   state.settings.lastTab = name;
-  saveSettings(state.settings);
+  // In the on-page panel the side tabs drive navigation; don't rewrite settings on every page load
+  if (!document.documentElement.classList.contains('embedded')) saveSettings(state.settings);
 }
 
 /* ---------- Next break + live ring ---------- */
